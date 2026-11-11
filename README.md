@@ -1,35 +1,22 @@
 # Netflix Catalog Analysis (SQL)
-### Is our shrinking attention span reshaping Netflix's content strategy?
 
 ## Overview
 
-<img src="netflix_overview.jpeg" width="200" align="left" style="margin-right: 20px" />
+<img src="netflix_overview.jpeg" width="270" align="left" style="margin-right: 20px" />
 
-SQL-based analysis of Netflix's content catalog, exploring how the platform's production strategy has evolved over time, including a focus on the balance between TV shows (short episodes) and movies (longer format).
+**Is our shrinking attention span reshaping Netflix's content strategy?** This project uses SQL to analyze the composition of Netflix's content catalog: who produces it, how it splits between Movies and TV Shows, and how that mix has changed over time. The analysis is framed around a broader hypothesis: as audience attention spans shrink, *streaming platforms may be adapting their catalogs toward shorter, more fragmented content*.
 
-The analysis is framed around a broader hypothesis: as audience attention spans shrink, streaming platforms may be adapting their catalogs toward shorter, more fragmented content.
-
-<!--
-Add reference to some findings to illustrate also the conclusion of the study
-Evaluate to add an image also, to put on the side of the overview as in the readme of the profile
--->
+**Key finding** The catalog is geographically concentrated (the United States and India are the only countries above a 10% share of titles) and leans toward Movies, with Japan and South Korea as TV-heavy exceptions. Over time, the Movie share of yearly additions dipped slightly after 2018, but the shift is driven by fewer Movies being added rather than more TV Shows: evidence for an attention-driven change in catalog strategy is weak.
 
 <br clear="left"/>
 
 ## Database and Assumptions
 
-<!-- 
-- [Link](https://www.kaggle.com/datasets/shivamb/netflix-shows) e provenienza dataset da Kaggle
-- "No real time data"
-- data about catalog and not effective viewership, the analysis reflects only Netflix offering, but assumes such can be in response to shifts in consumers behaviors
-- when comparing the trend of duration individually by Type (Movies and TV Shows), only Movies are accounted for: as for TV Shows, at first Season is not an objective measure of duration for the analysis in object, then, even surpassing this ambiguity, there are no indication regarding the fact that a TV Show in the catalog is ended or in progress, therefore the number of Season metric being unreliable
--->
-
 The dataset is sourced from [Kaggle – Netflix Movies and TV Shows](https://www.kaggle.com/datasets/shivamb/netflix-shows)
 and represents a static snapshot, not real-time data.
 
 - **Catalog, not consumption**: the data describes Netflix's *offering*, not
-  actual viewership. The analysis assumes that catalog composition can
+  actual viewership. The analysis assumes that catalog composition may
   reflect shifts in consumer behavior, without claiming a causal relationship.
 - **Duration trend limited to Movies**: when comparing content duration over
   time, only Movies are included. TV Shows are excluded from this specific
@@ -40,17 +27,9 @@ and represents a static snapshot, not real-time data.
 
 ## Database Inspection and Schema Redesign
 
-<!-- 
-- 8807 titles
-- difference between release year and date_added (to catalog)
-- time interval (date_added): 2014-2021
-- duration: minutes for Movies, Seasons for TV Shows
-- lists of items in the same cell for director, cast, country, listed_in: hard to apply counting operators
--->
-
 The original dataset consists of **8,807 titles**, with `date_added`
 (the date a title entered the catalog) ranging from **2014 to 2021** —
-distinct from `release_year`, which can inflate it significantly.
+distinct from `release_year`, referred to the content production date.
 `duration` is recorded in minutes for Movies and in seasons for TV Shows,
 requiring separate handling of the two content types throughout the analysis.
 
@@ -105,16 +84,17 @@ erDiagram
 
 ## Key Challenges
 
-- **Different units for `duration` field for Movies and TV Shows impose the structuring of a different analysis for the two subgroups.**
-- **Missing values in `country` accounting for ~9.5% of the titles and handling as a separate category**
-- **Multi-value attributes stored in single cells and the consequent need normalization**
-
+- **Different units for `duration` field** for Movies and TV Shows impose the structuring of a different analysis for the two subgroups.
+- **Missing values in `country`** accounting for ~9.5% of the titles and handling as a separate category
+- **Multi-value attributes** stored in single cells and the consequent need for normalization
 
 ## Analysis
 
 ### Content production across countries
 
-*Note: titles with a missing `country` value were checked individually to detect potential patterns (e.g. by genre) before deciding how to treat them. No meaningful pattern emerged — the missing values appear heterogeneous — so these titles were retained in the total count when computing Movies/TV Shows percentages by country and included in the `country` value Unknown.*
+*Note: titles with a **missing `country` value** were checked individually to detect potential patterns (e.g. by genre) before deciding how to treat them. No meaningful pattern emerged — the missing values appear heterogeneous — so these titles were retained in the total count when computing Movies/TV Shows percentages by country and **included in the `country` value Unknown**.*
+
+It is worth noting that the choice of reporting extensively only the top 10 countries by total title production - for the part of the analysis that comes further, too - stems from the fact that their volume allows to interpret more consistently their Movies and TV Shows production and consequently the percentage of Movies metric. Complementarily, the log-scale scatterplot including all countries is offered to provide a more global point of view, even if as production volume decreases the values are more unreliable.
 
 Ranking countries by number of titles produced reveals a strongly concentrated catalog: the **United States** and **India** are the only countries to exceed the threshold of **10% share** of total titles, while all other producers trail well behind.
 
@@ -141,13 +121,9 @@ Ranking countries by number of titles produced reveals a strongly concentrated c
 
 <p align="center"><em>Top 10 countries by percentage contribution to catalog production</em></p>
 
-It is worth noting that the choice of reporting extensively only the top 10 countries by total title production - for the part of the analysis that comes further, too - stems from the fact that their volume allows to interpret more consistently their Movies and TV Shows production and consequently the percentage of Movies metric. Complementarily, the log-scale scatterplot including all countries is offered to provide a more global point of view, even if as production volume decreases the values are more unreliable.
-
 Beyond volume, the balance between Movies and TV Shows varies significantly across these countries. Comparing each country's Movie output against its TV Show output highlights a distinct group of **TV-heavy producers**: Japan, South Korea stand out with a markedly low share of movies relative to TV shows — consistent with strong domestic TV/drama and anime industries — alongside a handful of countries showing the same pattern on a much smaller production volume and therefore less statistically meaningful.
 
 Conversely, the United States, India and other countries not present in the top 10 by total titles produced (e.g. Hong Kong, Indonesia, Philippines and United Arab Emirates) prove to be more **Movie-heavy producers**.
-
-ADD PERCENTAGES AND DATA referred to the table!
 
 <p align="center">
   <img src="scatter.png" width="500">
@@ -179,31 +155,83 @@ ADD PERCENTAGES AND DATA referred to the table!
 
 <p align="center"><em>Movies vs TV Shows production by country (Top 10 by total titles)</em></p>
 
-An interesting point emerging from this breakdown is that the Movies/TV Shows mix seems to reflect mostly the structure of the local industries (e.g. Asian countries and anime/shows culture). This factor can plausibly be taken into account in the analysis, differentiating geographical preferences from behavioral ones like attention span, which is the subject of this analysis.
-
-An interesting point emerging from this breakdown is that the Movies/TV Shows mix plausibly reflects the structure of local industries (e.g. anime and drama production in Japan and South Korea) rather than viewers' preferences alone. This matters for the analysis that follows: a shift in the geographic composition of the catalog could alter the aggregate mix over time even with no change in attention-related behavior (a composition effect). Since the temporal analysis is run on the aggregate catalog, this effect is not controlled for and is acknowledged as a limitation (see Limitations & Next Steps).
+An interesting point emerging from this breakdown is that the Movies/TV Shows mix plausibly reflects the **structure of local industries** (e.g. anime and drama production in Japan and South Korea) rather than viewers' preferences alone. This matters for the analysis that follows: a shift in the geographic composition of the catalog could alter the aggregate mix over time even with no change in attention-related behavior (a **composition effect**). Since the temporal analysis is run on the aggregate catalog, this effect is not controlled for and is acknowledged as a limitation (see *Limitations & Next Steps*).
 
 ### Evolution of short vs. long contents
 
-first point: declare how to distinguish the analysis for tv shows and movies
+The temporal analysis uses the year a title was added to the catalog (`date_added`) and, as anticipated in *Dataset & Assumptions*, is carried out at two levels. First, yearly additions are broken down by type (Movies and TV Shows), in absolute and relative terms. Then, since duration is not comparable across the two types, average duration is analyzed on Movies only.
 
-second point: tv-shows and movies - absolute and relative evolution year by year in the catalog expansion
+On one hand, the new additions to the catalog (total and distinguished by content type) are paired with the metric of `pct_movies` consistently with the previous section.
 
-third point: movies specific for the different granularity - study the average duration year by year
+- **Volume of additions**: yearly additions grow steadily until 2019 (about 2,000 titles) and decline in 2020 (about 1,900).
+- **Content mix**: the Movie share peaks at 75% in 2018, then slips to 71% in 2019, 68% in 2020 and 66% in 2021, a mild shift toward TV Shows (from about 25% to 34% of additions). Over the full 2016-2021 window the series is not monotonic, so this is consistent with the hypothesis but not conclusive. The shift is driven by fewer Movies being added rather than more TV Shows: from 2019 to 2020, Movie additions fall by about 10% (1,424 to 1,284) while TV Shows stay flat (about 590).
 
-let's go, not so hard!!!!
+<div align="center">
+
+| year_added | new_titles | new_movies | new_shows | pct_movies |
+|------------|------------|------------|-----------|------------|
+| 2021       | 1498       | 993        | 505       | 66.29      |
+| 2020       | 1879       | 1284       | 595       | 68.33      |
+| 2019       | 2016       | 1424       | 592       | 70.63      |
+| 2018       | 1649       | 1237       | 412       | 75.02      |
+| 2017       | 1188       | 839        | 349       | 70.62      |
+| 2016       | 429        | 253        | 176       | 58.97      |
+| 2015       | 82         | 56         | 26        | 68.29      |
+| 2014       | 24         | 19         | 5         | 79.17      |
+| 2013       | 11         | 6          | 5         | 54.55      |
+| 2012       | 3          | 3          | 0         | 100.00     |
+| 2011       | 13         | 13         | 0         | 100.00     |
+| 2010       | 1          | 1          | 0         | 100.00     |
+| 2009       | 2          | 2          | 0         | 100.00     |
+| 2008       | 2          | 1          | 1         | 50.00      |
+
+</div>
+
+<p align="center"><em>Titles added to the catalog per year, by type, and percentage of Movies</em></p>
+
+Conversely, in the detailed snapshot for Movies only, mean and standard deviation of Movies duration are reported together with the absolute value `new_movies`.
+
+- **Average duration**: from 2018 to 2021 the average Movies duration stays stable between 100 and 103 minutes (the highest values in the series), with a standard deviation consistently around 26-30 minutes. Movies added to the catalog are therefore not getting shorter, nor more dispersed, so this metric does not support the hypothesis.
+- **Earlier years**: the rise from about 84 minutes in 2016 to about 102 in 2018 runs opposite to the hypothesis, but it rests on a much smaller number of titles and plausibly reflects a change in the composition of what was added rather than a genuine lengthening.
+
+<div align="center">
+
+| year_added | new_movies | avg_duration | std_duration |
+|------------|------------|--------------|--------------|
+| 2021       | 993        | 102.84       | 26.02        |
+| 2020       | 1284       | 101.59       | 29.40        |
+| 2019       | 1424       | 99.92        | 27.25        |
+| 2018       | 1237       | 101.74       | 29.84        |
+| 2017       | 838        | 95.68        | 27.34        |
+| 2016       | 251        | 83.61        | 24.75        |
+| 2015       | 56         | 83.57        | 24.21        |
+| 2014       | 19         | 77.00        | 21.35        |
+| 2013       | 6          | 83.50        | 26.49        |
+| 2012       | 3          | 62.00        | 25.66        |
+| 2011       | 13         | 93.46        | 5.89         |
+| 2010       | 1          | 84.00        | 0.00         |
+| 2009       | 2          | 66.50        | 37.50        |
+| 2008       | 1          | 81.00        | 0.00         |
+
+</div>
+
+<p align="center"><em>Average Movie duration (minutes) by year of addition to the catalog</em></p>
 
 ## Key Findings
 
+- **A concentrated, Movie-leaning catalog**: the United States and India are the only countries above a 10% share of titles, and most of the top 10 producers lean toward Movies (e.g. 75% for the US, 92% for India). Japan and South Korea are the TV-heavy exceptions, a pattern plausibly tied to their local drama and anime industries.
+- **A mild recent shift toward TV Shows**: the Movie share of yearly additions peaks at 75% in 2018 and falls to 66% in 2021. The shift is driven by fewer Movies being added rather than more TV Shows, and the series is not monotonic over the full window, so it is consistent with the hypothesis but not conclusive.
+- **No shortening of Movies**: the average duration of Movies added to the catalog stays stable around 100 minutes between 2018 and 2021, with a steady standard deviation. On this metric the hypothesis is not supported.
+- **Overall**: the evidence for an attention-driven change in Netflix's catalog strategy is weak. Geography matters as a confounder: since the Movie/TV mix differs strongly across countries, shifts in the catalog's geographic composition could produce changes in the aggregate mix independently of audience behavior.
+
 ## Limitations and Next Steps
 
-
-## Point 2 - Temporal evolution of short vs long contents
-There are several studies that indicates how with years passing and evolution of the pace of life, digitalization and social media the attention threshold of people has decreased.
-
-- Interesting to inspect if the production release schedule of Netflix over years is coherent with such a trend, and in general understand if one type of content is preferred/more easily produced and so on (# of movies and TV shows for release year, or #titles released each year (absolute) + % movies over the total to be more synthetic)
-
-- Focusing on Movies only (assumptions that you do not know if the number of seasons of a TV shows is ended or in process, so not reliable measure of duration), repeat the analysis by finding for each year aggregated measures related to duration
-
+- **Supply, not demand**: the data describe what is added to the catalog, not what is watched, so any link to attention span is inferred. *A complement with viewership data could be useful.*
+- **Overlapping shares**: co-productions count for every producing country, so shares do not sum to 100%, and `Unknown` (~9.5% of titles) is not a geographic category. *A "primary country" assignment for mutually exclusive shares could make results clearer.*
+- **Small producers**: Movie/TV percentages are unstable at low volumes, so the interpretation is restricted to the top 10 producers.
+- **Composition effect**: the Movie/TV mix plausibly reflects local industries, and the aggregate temporal trend does not control for shifts in geographic composition.
+- **Short window**: only 2016-2021 has enough volume to interpret, and the series is not monotonic, so the observed shift is mild and not conclusive.
+- **Incomplete 2021 and COVID-19**: 2021 stops in September, so its volume is not comparable (the Movie share is less exposed), and the 2020 decline overlaps with the pandemic.
+- **Duration coverage**: duration is analyzed on Movies only, and the "short format" of TV Shows is assumed, not measured, since episode length is not in the dataset.
 
   
