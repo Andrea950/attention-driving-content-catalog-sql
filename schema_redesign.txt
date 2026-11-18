@@ -1,0 +1,91 @@
+# Import libraries
+
+import pandas as pd
+
+# Import dataset
+
+df = pd.read_csv('/content/drive/MyDrive/netflix_titles.csv')
+
+# Define function for a column split
+
+def normalize_column(df, id_col, target_col):
+    """
+    Normalize a column containing comma-separated values.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Original dataframe.
+    id_col : str
+        Identifier column (e.g. show_id).
+    target_col : str
+        Column to normalize.
+
+    Returns
+    -------
+    pandas.DataFrame
+        DataFrame with one value per row.
+    """
+
+    rows = []
+
+    for _, row in df.iterrows():
+
+        identifier = row[id_col]
+        values = row[target_col]
+
+        if pd.isna(values):
+            rows.append({
+                id_col: identifier,
+                target_col: None
+            })
+
+        else:
+            for value in values.split(","):
+                rows.append({
+                    id_col: identifier,
+                    target_col: value.strip()
+                })
+
+    return pd.DataFrame(rows)
+
+# Implement normalize_column function where needed
+
+title_country = normalize_column(df, "show_id", "country")
+title_country.to_csv(
+    '/content/drive/MyDrive/title_country.csv',
+    index=False
+)
+
+title_director = normalize_column(df, "show_id", "director")
+title_director.to_csv(
+    '/content/drive/MyDrive/title_director.csv',
+    index=False
+)
+
+title_cast = normalize_column(df, "show_id", "cast")
+title_cast.to_csv(
+    '/content/drive/MyDrive/title_cast.csv',
+    index=False
+)
+
+title_genre = normalize_column(df, "show_id", "listed_in")
+title_genre.to_csv(
+    '/content/drive/MyDrive/title_genre.csv',
+    index=False
+)
+
+# Exclude columns from the initial database
+
+columns_to_exclude = [
+    'country',
+    "director",
+    "cast",
+    "listed_in"
+]
+
+df_new = df.drop(columns=columns_to_exclude)
+df_new.to_csv(
+    '/content/drive/MyDrive/netflix_titles_new.csv',
+    index=False
+)

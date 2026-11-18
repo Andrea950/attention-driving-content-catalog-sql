@@ -1,0 +1,42 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+N_COUNTRIES = 15
+
+df = pd.read_csv('/content/drive/MyDrive/country_contribution.csv')
+
+df_top = df.sort_values('contribution_pct', ascending=False).head(N_COUNTRIES)
+
+bar_color = plt.cm.tab20.colors[0]
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+bars = ax.barh(
+    df_top['country'][::-1],       
+    df_top['contribution_pct'][::-1] * 100,   
+    color=bar_color
+)
+
+# 10% theshold
+ax.axvline(x=10, color='black', linestyle='--', linewidth=1)
+
+# Labels
+for bar, value in zip(bars, df_top['contribution_pct'][::-1] * 100):
+    ax.text(
+        value + 0.5,                    
+        bar.get_y() + bar.get_height() / 2,
+        f'{value:.1f}%',
+        va='center',
+        fontsize=9
+    )
+
+ax.set_xlim(0, 42)
+ax.set_xlabel('contribution_pct')
+ax.set_title('Share (%) of Produced Titles in the Catalog by Country')
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+
+plt.tight_layout()
+plt.savefig('top_contribution.png', dpi=300, bbox_inches='tight')
+plt.show()
