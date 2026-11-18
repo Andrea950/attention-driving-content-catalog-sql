@@ -1,0 +1,10 @@
+SELECT
+COALESCE(country, 'Unknown') AS country,
+COUNT(DISTINCT show_id) AS num_titles,
+ROUND(
+COUNT(DISTINCT show_id) * 100.0 /
+(SELECT COUNT(DISTINCT show_id) FROM title_country),2
+) AS contribution_pct
+FROM title_country
+GROUP BY COALESCE(country, 'Unknown')
+ORDER BY num_titles DESC

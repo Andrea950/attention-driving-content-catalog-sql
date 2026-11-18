@@ -1,0 +1,11 @@
+CREATE TABLE catalog_evolution_by_year AS
+SELECT
+CAST(SUBSTR(date_added, -4) AS INTEGER) AS year_added,
+COUNT(show_id) AS new_titles,
+SUM(CASE WHEN type = 'Movie' THEN 1 ELSE 0 END) AS new_movies,
+SUM(CASE WHEN type = 'TV Show' THEN 1 ELSE 0 END) AS new_shows,
+ROUND(SUM(CASE WHEN type = 'Movie' THEN 1 ELSE 0 END) * 100.0 / COUNT(show_id),2) AS pct_movies
+FROM netflix_titles_new
+WHERE date_added IS NOT NULL
+GROUP BY year_added
+ORDER BY year_added DESC;

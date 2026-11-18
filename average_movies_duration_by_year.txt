@@ -1,0 +1,18 @@
+CREATE TABLE average_movies_duration_by_year AS
+WITH movies AS (
+SELECT
+CAST(SUBSTR(date_added, -4) AS INTEGER) AS year_added,
+CAST(REPLACE(duration, ' min', '') AS INTEGER) AS minutes
+FROM netflix_titles_new
+WHERE type = 'Movie'
+AND date_added IS NOT NULL
+AND duration IS NOT NULL
+)
+SELECT
+year_added,
+COUNT(*) AS new_movies,
+ROUND(AVG(minutes), 2) AS avg_duration,
+ROUND(SQRT(AVG(minutes * minutes) - AVG(minutes) * AVG(minutes)), 2) AS std_duration
+FROM movies
+GROUP BY year_added
+ORDER BY year_added DESC;

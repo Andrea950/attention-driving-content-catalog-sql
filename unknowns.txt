@@ -1,0 +1,7 @@
+SELECT
+DISTINCT tc.show_id,
+nt.title
+FROM title_country tc
+JOIN netflix_titles nt
+ON tc.show_id = nt.show_id
+WHERE COALESCE(tc.country,'Unknown')='Unknown';

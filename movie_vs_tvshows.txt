@@ -1,0 +1,22 @@
+WITH country_counts AS (
+SELECT
+COALESCE(tc.country, 'Unknown') AS country,
+COUNT(DISTINCT CASE
+WHEN nt.type = 'Movie' THEN tc.show_id
+END) AS movies,
+COUNT(DISTINCT CASE
+WHEN nt.type = 'TV Show' THEN tc.show_id
+END) AS tv_shows
+FROM title_country tc
+JOIN netflix_titles nt
+ON tc.show_id = nt.show_id
+GROUP BY COALESCE(tc.country, 'Unknown')
+)
+SELECT
+country,
+movies,
+tv_shows,
+(movies + tv_shows) AS total_titles,
+ROUND(movies * 100.0 / NULLIF(movies + tv_shows, 0),2) AS pct_movies
+FROM country_counts
+ORDER BY total_titles DESC;
