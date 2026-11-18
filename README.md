@@ -99,7 +99,7 @@ It is worth noting that the choice of reporting extensively only the top 10 coun
 Ranking countries by number of titles produced reveals a strongly concentrated catalog: the **United States** and **India** are the only countries to exceed the threshold of **10% share** of total titles, while all other producers trail well behind.
 
 <p align="center">
-  <img src="top_contribution_pct.png" width="500">
+  <img src="plots/top_contribution_pct.png" width="500">
 </p>
 
 <div align="center">
@@ -126,7 +126,7 @@ Beyond volume, the balance between Movies and TV Shows varies significantly acro
 Conversely, the United States, India and other countries not present in the top 10 by total titles produced (e.g. Hong Kong, Indonesia, Philippines and United Arab Emirates) prove to be more **Movie-heavy producers**.
 
 <p align="center">
-  <img src="scatter.png" width="500">
+  <img src="plots/scatter.png" width="500">
 </p>
 
 <div align="center">
