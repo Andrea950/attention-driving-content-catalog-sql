@@ -1,4 +1,4 @@
-# Netflix Catalog Analysis (SQL)
+# Shorter Attention, Shorter Shows? A SQL Analysis of Netflix's Catalog Strategy
 
 ## Overview
 
