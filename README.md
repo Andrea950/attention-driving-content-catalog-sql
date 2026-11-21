@@ -92,7 +92,7 @@ erDiagram
 
 ### Content production across countries
 
-*Note: titles with a **missing `country` value** were checked individually to detect potential patterns (e.g. by genre) before deciding how to treat them. No meaningful pattern emerged — the missing values appear heterogeneous — so these titles were retained in the total count when computing Movies/TV Shows percentages by country and **included in the `country` value Unknown**.*
+> Titles with a **missing `country` value** were checked individually to detect potential patterns (e.g. by genre) before deciding how to treat them. No meaningful pattern emerged — the missing values appear heterogeneous — so these titles were retained in the total count when computing Movies/TV Shows percentages by country and **included in the `country` value Unknown**.
 
 It is worth noting that the choice of reporting extensively only the top 10 countries by total title production - for the part of the analysis that comes further, too - stems from the fact that their volume allows to interpret more consistently their Movies and TV Shows production and consequently the percentage of Movies metric. Complementarily, the log-scale scatterplot including all countries is offered to provide a more global point of view, even if as production volume decreases the values are more unreliable.
 
